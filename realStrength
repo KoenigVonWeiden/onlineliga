@@ -1,0 +1,18 @@
+// ==UserScript==
+// @name         New Userscript
+// @namespace    todo
+// @version      0.1
+// @description  Script soll die exakten Werte in der Aufstellung ausgeben
+// @author       König von Weiden
+// @match        https://www.onlineliga.de
+// @include      https://www.onlineliga.de/**
+// @grant        none
+// ==/UserScript==
+
+function selectPlayerStrength() {
+	var strength;
+	strength = document.getElementByClassName('ol-team-settings-pitch-position-avg-value').value;
+	if (strength == 31) {
+		alert("Stärke 31 wurde gefunden!");
+	}
+}
