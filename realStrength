@@ -1,18 +1,51 @@
 // ==UserScript==
 // @name         New Userscript
-// @namespace    todo
+// @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  Script soll die exakten Werte in der Aufstellung ausgeben
-// @author       König von Weiden
+// @description  try to take over the world!
+// @author       You
 // @match        https://www.onlineliga.de
-// @include      https://www.onlineliga.de/**
 // @grant        none
 // ==/UserScript==
 
-function selectPlayerStrength() {
-	var strength;
-	strength = document.getElementByClassName('ol-team-settings-pitch-position-avg-value').value;
-	if (strength == 31) {
-		alert("Stärke 31 wurde gefunden!");
-	}
-}
+(function() {
+    'use strict';
+
+    setTimeout(checkDiv, 5000);
+
+    function checkDiv(){
+        if(!!document.getElementById("playerDetails")){
+            alert("div#playerDetails ist da");
+            getSkillValues;
+        }
+        else{
+            alert("div#playerDetails ist NICHT da");
+        }
+    }
+
+    function getSkillValues(){
+        let lf = document.getElementsByClassName("ol-value-bar-small-label-value")[0].innerHTML;
+        let rf = document.getElementsByClassName("ol-value-bar-small-label-value")[1].innerHTML;
+        let fitness = document.getElementsByClassName("ol-value-bar-small-label-value")[2].innerHTML;
+        let kondition = document.getElementsByClassName("ol-value-bar-small-label-value")[3].innerHTML;
+        let schnelligkeit = document.getElementsByClassName("ol-value-bar-small-label-value")[4].innerHTML;
+        let technik = document.getElementsByClassName("ol-value-bar-small-label-value")[5].innerHTML;
+        let schusstechnik = document.getElementsByClassName("ol-value-bar-small-label-value")[6].innerHTML;
+        let schusskraft = document.getElementsByClassName("ol-value-bar-small-label-value")[7].innerHTML;
+        let kopfball = document.getElementsByClassName("ol-value-bar-small-label-value")[8].innerHTML;
+        let zweikampf = document.getElementsByClassName("ol-value-bar-small-label-value")[9].innerHTML;
+        let taktik = document.getElementsByClassName("ol-value-bar-small-label-value")[10].innerHTML;
+        let athletik = document.getElementsByClassName("ol-value-bar-small-label-value")[11].innerHTML;
+
+        let liv = (8*schnelligkeit+4*technik+5*schusstechnik+9*zweikampf+8*taktik+8*kopfball+6*athletik+3*lf+1*rf+2*schusskraft+2*kondition)/56;
+        let riv = (8*schnelligkeit+4*technik+5*schusstechnik+9*zweikampf+8*taktik+8*kopfball+6*athletik+1*lf+3*rf+2*schusskraft+2*kondition)/56;
+        let ziv = (8*schnelligkeit+3*technik+5*schusstechnik+10*zweikampf+8*taktik+9*kopfball+6*athletik+1*lf+1*rf+2*schusskraft+2*kondition)/55;
+        let st = (8*schnelligkeit+9*technik+5*schusstechnik+2*zweikampf+3*taktik+9*kopfball+7*athletik+1*lf+1*rf+1*schusskraft+1*kondition)/47;
+        let zoml = (8*schnelligkeit+8*technik+7*schusstechnik+7*zweikampf+5*taktik+2*kopfball+2*athletik+3*lf+1*rf+1*schusskraft+1*kondition)/45;
+        let zomr = (8*schnelligkeit+8*technik+7*schusstechnik+7*zweikampf+5*taktik+2*kopfball+2*athletik+1*lf+3*rf+1*schusskraft+1*kondition)/45;
+        let lom = (9*schnelligkeit+8*technik+8*schusstechnik+5*zweikampf+4*taktik+1*kopfball+2*athletik+4*lf+1*rf+1*schusskraft+1*kondition)/44;
+        let rom = (9*schnelligkeit+8*technik+8*schusstechnik+5*zweikampf+4*taktik+1*kopfball+2*athletik+1*lf+4*rf+1*schusskraft+1*kondition)/44;
+        let lst = (8*schnelligkeit+9*technik+8*schusstechnik+2*zweikampf+4*taktik+3*kopfball+3*athletik+4*lf+1*rf+1*schusskraft+1*kondition)/44;
+        let rst = (8*schnelligkeit+9*technik+8*schusstechnik+2*zweikampf+4*taktik+3*kopfball+3*athletik+4*lf+1*rf+1*schusskraft+1*kondition)/44;
+    }
+})();
