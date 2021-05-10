@@ -5,47 +5,136 @@
 // @description  try to take over the world!
 // @author       You
 // @match        https://www.onlineliga.de
+// @require      https://greasyfork.org/scripts/5392-waitforkeyelements/code/WaitForKeyElements.js?version=115012
 // @grant        none
 // ==/UserScript==
 
 (function() {
     'use strict';
 
-    setTimeout(checkDiv, 5000);
+    /*setTimeout(checkDiv, 5000);*/
 
     function checkDiv(){
         if(!!document.getElementById("playerDetails")){
-            alert("div#playerDetails ist da");
-            getSkillValues;
+            console.log("div#playerDetails ist da");
+            getSkillValues();
         }
         else{
-            alert("div#playerDetails ist NICHT da");
+            console.log("div#playerDetails ist NICHT da");
         }
     }
 
     function getSkillValues(){
-        let lf = document.getElementsByClassName("ol-value-bar-small-label-value")[0].innerHTML;
-        let rf = document.getElementsByClassName("ol-value-bar-small-label-value")[1].innerHTML;
-        let fitness = document.getElementsByClassName("ol-value-bar-small-label-value")[2].innerHTML;
-        let kondition = document.getElementsByClassName("ol-value-bar-small-label-value")[3].innerHTML;
-        let schnelligkeit = document.getElementsByClassName("ol-value-bar-small-label-value")[4].innerHTML;
-        let technik = document.getElementsByClassName("ol-value-bar-small-label-value")[5].innerHTML;
-        let schusstechnik = document.getElementsByClassName("ol-value-bar-small-label-value")[6].innerHTML;
-        let schusskraft = document.getElementsByClassName("ol-value-bar-small-label-value")[7].innerHTML;
-        let kopfball = document.getElementsByClassName("ol-value-bar-small-label-value")[8].innerHTML;
-        let zweikampf = document.getElementsByClassName("ol-value-bar-small-label-value")[9].innerHTML;
-        let taktik = document.getElementsByClassName("ol-value-bar-small-label-value")[10].innerHTML;
-        let athletik = document.getElementsByClassName("ol-value-bar-small-label-value")[11].innerHTML;
+		let test = document.querySelectorAll(".ol-player-details-selected .ol-value-bar-small-label-value"); // in test speicherst du die Werte ab, die innerhalb vonvom div .ol-player-details-selected in einem span mit der class .ol-value-bar-small-label-value gefunden werden
+		console.log(test); // gibt sogar einen Wert mehr aus, weil die Gesamtstärke noch mit dabei ist
 
-        let liv = (8*schnelligkeit+4*technik+5*schusstechnik+9*zweikampf+8*taktik+8*kopfball+6*athletik+3*lf+1*rf+2*schusskraft+2*kondition)/56;
-        let riv = (8*schnelligkeit+4*technik+5*schusstechnik+9*zweikampf+8*taktik+8*kopfball+6*athletik+1*lf+3*rf+2*schusskraft+2*kondition)/56;
-        let ziv = (8*schnelligkeit+3*technik+5*schusstechnik+10*zweikampf+8*taktik+9*kopfball+6*athletik+1*lf+1*rf+2*schusskraft+2*kondition)/55;
-        let st = (8*schnelligkeit+9*technik+5*schusstechnik+2*zweikampf+3*taktik+9*kopfball+7*athletik+1*lf+1*rf+1*schusskraft+1*kondition)/47;
-        let zoml = (8*schnelligkeit+8*technik+7*schusstechnik+7*zweikampf+5*taktik+2*kopfball+2*athletik+3*lf+1*rf+1*schusskraft+1*kondition)/45;
-        let zomr = (8*schnelligkeit+8*technik+7*schusstechnik+7*zweikampf+5*taktik+2*kopfball+2*athletik+1*lf+3*rf+1*schusskraft+1*kondition)/45;
-        let lom = (9*schnelligkeit+8*technik+8*schusstechnik+5*zweikampf+4*taktik+1*kopfball+2*athletik+4*lf+1*rf+1*schusskraft+1*kondition)/44;
-        let rom = (9*schnelligkeit+8*technik+8*schusstechnik+5*zweikampf+4*taktik+1*kopfball+2*athletik+1*lf+4*rf+1*schusskraft+1*kondition)/44;
-        let lst = (8*schnelligkeit+9*technik+8*schusstechnik+2*zweikampf+4*taktik+3*kopfball+3*athletik+4*lf+1*rf+1*schusskraft+1*kondition)/44;
-        let rst = (8*schnelligkeit+9*technik+8*schusstechnik+2*zweikampf+4*taktik+3*kopfball+3*athletik+4*lf+1*rf+1*schusskraft+1*kondition)/44;
+        // Übergabe der Werte in test an die entsprechenden Variablen
+        let lf = test[0].innerHTML;
+        let rf = test[1].innerHTML;
+        let fitness = test[2].innerHTML;
+        let kondition = test[3].innerHTML;
+        let schnelligkeit = test[4].innerHTML;
+        let technik = test[5].innerHTML;
+        let schusstechnik = test[6].innerHTML;
+        let schusskraft = test[7].innerHTML;
+        let kopfball = test[8].innerHTML;
+        let zweikampf = test[9].innerHTML;
+        let taktik = test[10].innerHTML;
+        let athletik = test[11].innerHTML;
+
+		let aufstellung = document.querySelectorAll("#dropdownSystems .ol-dropdown-text")[0].innerText; // hier liest du die Formation aus
+		let aufstellungTaktik = document.querySelectorAll("#dropdownTactic .ol-dropdown-text")[0].innerText; // hier die Ausprägung der Formation
+		console.log(aufstellung); // Kontrollausgabe
+		console.log(aufstellungTaktik); // Kontrollausgabe
+
+		// hier übergibst die oben ausgelesenen Variablen an die Funktion calculateValues und speicherst das Ergebnis (ein Array soweit ich das von hier aus schon sehen kann) in der Variable valuesToInsert
+        // wann nimmt man let und wann const?
+        const valuesToInsert = calculateValues(aufstellung, aufstellungTaktik, lf, rf, fitness, kondition, schnelligkeit, technik, schusstechnik, schusskraft, kopfball, zweikampf, taktik, athletik);
+
+        // hier wird dann das neu erzeugte div mit Inhalt gefüllt und über .insertBefore eingefügt
+        // was bedeutet das $?
+		$('<div class="realStrenght" style="margin:5px 2px;text-align:center;">' +
+		'<div style="width:8%;float:left;"><div>' + valuesToInsert[0] + '</div><div>' + valuesToInsert[1] + '</div></div>' +
+		'<div style="width:8%;float:left;"><div>' + valuesToInsert[2] + '</div><div>' + valuesToInsert[3] + '</div></div>' +
+		'<div style="width:8%;float:left;"><div>' + valuesToInsert[4] + '</div><div>' + valuesToInsert[5] + '</div></div>' +
+		'<div style="width:8%;float:left;"><div>' + valuesToInsert[6] + '</div><div>' + valuesToInsert[7] + '</div></div>' +
+		'<div style="width:10%;float:left;"><div>' + valuesToInsert[8] + '</div><div>' + valuesToInsert[9] + '</div></div>' +
+		'<div style="width:10%;float:left;"><div>' + valuesToInsert[10] + '</div><div>' + valuesToInsert[11] + '</div></div>' +
+		'<div style="width:8%;float:left;"><div>' + valuesToInsert[12] + '</div><div>' + valuesToInsert[13] + '</div></div>' +
+		'<div style="width:8%;float:left;"><div>' + valuesToInsert[14] + '</div><div>' + valuesToInsert[15] + '</div></div>' +
+		'<div style="width:8%;float:left;"><div>' + valuesToInsert[16] + '</div><div>' + valuesToInsert[17] + '</div></div>' +
+		'<div style="width:8%;float:left;"><div>' + valuesToInsert[18] + '</div><div>' + valuesToInsert[19] + '</div></div>' +
+		'</div>').insertBefore(".ol-team-settings-player-details-bottom .container");
+    }
+
+	function calculateValues(aufstellung, aufstellungTaktik, lf, rf, fitness, kondition, schnelligkeit, technik, schusstechnik, schusskraft, kopfball, zweikampf, taktik, athletik) {
+		const positions = getPositionsPerLineup(aufstellung, aufstellungTaktik); // überprüft, um welche Aufstellung es sich handelt (bisher nur auf 4-4-2 ausgelegt)
+		// holt sich die Werte pro Position für die Berechnung in Abhängigkeit der Aufstellung
+        const positionValues = [getValuesPerLineup(aufstellung, aufstellungTaktik, positions[0]),
+								getValuesPerLineup(aufstellung, aufstellungTaktik, positions[1]),
+								getValuesPerLineup(aufstellung, aufstellungTaktik, positions[1]),
+								getValuesPerLineup(aufstellung, aufstellungTaktik, positions[1]),
+								getValuesPerLineup(aufstellung, aufstellungTaktik, positions[1]),
+								getValuesPerLineup(aufstellung, aufstellungTaktik, positions[1]),
+								getValuesPerLineup(aufstellung, aufstellungTaktik, positions[1]),
+								getValuesPerLineup(aufstellung, aufstellungTaktik, positions[1]),
+								getValuesPerLineup(aufstellung, aufstellungTaktik, positions[1]),
+								getValuesPerLineup(aufstellung, aufstellungTaktik, positions[1])];
+		console.log(positionValues);
+        // gibt den berechneten Gesamtwert zurück an getSkillValues
+		return [positions[0], ((lf*positionValues[0][0]+rf*positionValues[0][1]+fitness*positionValues[0][2]+schnelligkeit*positionValues[0][3]+technik*positionValues[0][4]+schusstechnik*positionValues[0][5]+schusskraft*positionValues[0][6]+kopfball*positionValues[0][7]+zweikampf*positionValues[0][8]+taktik*positionValues[0][9]+athletik*positionValues[0][10])/positionValues[0][11]).toFixed(2),
+				positions[1], ((lf*positionValues[1][0]+rf*positionValues[1][1]+fitness*positionValues[0][2]+schnelligkeit*positionValues[1][3]+technik*positionValues[1][4]+schusstechnik*positionValues[1][5]+schusskraft*positionValues[1][6]+kopfball*positionValues[1][7]+zweikampf*positionValues[1][8]+taktik*positionValues[1][9]+athletik*positionValues[1][10])/positionValues[1][11]).toFixed(2),
+				positions[1], ((lf*positionValues[2][0]+rf*positionValues[2][1]+fitness*positionValues[0][2]+schnelligkeit*positionValues[2][3]+technik*positionValues[2][4]+schusstechnik*positionValues[2][5]+schusskraft*positionValues[2][6]+kopfball*positionValues[2][7]+zweikampf*positionValues[2][8]+taktik*positionValues[2][9]+athletik*positionValues[2][10])/positionValues[2][11]).toFixed(2),
+				positions[1], ((lf*positionValues[3][0]+rf*positionValues[3][1]+fitness*positionValues[0][2]+schnelligkeit*positionValues[3][3]+technik*positionValues[3][4]+schusstechnik*positionValues[3][5]+schusskraft*positionValues[3][6]+kopfball*positionValues[3][7]+zweikampf*positionValues[3][8]+taktik*positionValues[3][9]+athletik*positionValues[3][10])/positionValues[3][11]).toFixed(2),
+				positions[1], ((lf*positionValues[4][0]+rf*positionValues[4][1]+fitness*positionValues[0][2]+schnelligkeit*positionValues[4][3]+technik*positionValues[4][4]+schusstechnik*positionValues[4][5]+schusskraft*positionValues[4][6]+kopfball*positionValues[4][7]+zweikampf*positionValues[4][8]+taktik*positionValues[4][9]+athletik*positionValues[4][10])/positionValues[4][11]).toFixed(2),
+				positions[1], ((lf*positionValues[5][0]+rf*positionValues[5][1]+fitness*positionValues[0][2]+schnelligkeit*positionValues[5][3]+technik*positionValues[5][4]+schusstechnik*positionValues[5][5]+schusskraft*positionValues[5][6]+kopfball*positionValues[5][7]+zweikampf*positionValues[5][8]+taktik*positionValues[5][9]+athletik*positionValues[5][10])/positionValues[5][11]).toFixed(2),
+				positions[1], ((lf*positionValues[6][0]+rf*positionValues[6][1]+fitness*positionValues[0][2]+schnelligkeit*positionValues[6][3]+technik*positionValues[6][4]+schusstechnik*positionValues[6][5]+schusskraft*positionValues[6][6]+kopfball*positionValues[6][7]+zweikampf*positionValues[6][8]+taktik*positionValues[6][9]+athletik*positionValues[6][10])/positionValues[6][11]).toFixed(2),
+				positions[1], ((lf*positionValues[7][0]+rf*positionValues[7][1]+fitness*positionValues[0][2]+schnelligkeit*positionValues[7][3]+technik*positionValues[7][4]+schusstechnik*positionValues[7][5]+schusskraft*positionValues[7][6]+kopfball*positionValues[7][7]+zweikampf*positionValues[7][8]+taktik*positionValues[7][9]+athletik*positionValues[7][10])/positionValues[7][11]).toFixed(2),
+				positions[1], ((lf*positionValues[8][0]+rf*positionValues[8][1]+fitness*positionValues[0][2]+schnelligkeit*positionValues[8][3]+technik*positionValues[8][4]+schusstechnik*positionValues[8][5]+schusskraft*positionValues[8][6]+kopfball*positionValues[8][7]+zweikampf*positionValues[8][8]+taktik*positionValues[8][9]+athletik*positionValues[8][10])/positionValues[8][11]).toFixed(2),
+				positions[1], ((lf*positionValues[9][0]+rf*positionValues[9][1]+fitness*positionValues[0][2]+schnelligkeit*positionValues[9][3]+technik*positionValues[9][4]+schusstechnik*positionValues[9][5]+schusskraft*positionValues[9][6]+kopfball*positionValues[9][7]+zweikampf*positionValues[9][8]+taktik*positionValues[9][9]+athletik*positionValues[9][10])/positionValues[9][11]).toFixed(2)];
+	}
+
+    // diese Funktion sucht zur aktuell gewählten Aufstellung die Positionen raus, die dann später im neu erstellten div angezeigt werden sollen
+	function getPositionsPerLineup(aufstellung, aufstellungTaktik) {
+		switch(aufstellung) {
+			case "4-4-2":
+				switch(aufstellungTaktik) {
+					case "Flügel":
+						return ['LIV', 'RIV', 'LAV', 'RAV', 'DM', 'LOM', 'ROM', 'ZOM', 'LST', 'RST'];
+				}
+		}
+	}
+
+	/**
+	 * lf, rf, fitness, schnelligkeit, technik, schusstechnik, schusskraft, kopfball, zweikampf, taktik, athletik
+	 */
+	function getValuesPerLineup(aufstellung, aufstellungTaktik, position) {
+		switch(aufstellung) {
+			case "4-4-2":
+				switch(aufstellungTaktik) {
+					case "Flügel":
+						switch(position) {
+							case "LIV":
+								return [3, 1, 2, 8, 4, 5, 2, 8, 9, 8, 6, 56];
+							case "RIV":
+								return [1, 3, 2, 8, 4, 5, 2, 8, 9, 8, 6, 56];
+						}
+				}
+		}
+	}
+
+	function init(){
+        waitForKeyElements (
+            "div.ol-player-details-background",
+            checkDiv
+        );
+    }
+
+    if (!window.OLToolboxActivated) {
+       init();
+    } else {
+        window.OnlineligaFriendlyInfo = {
+            init : init
+        };
     }
 })();
