@@ -1,0 +1,52 @@
+// ==UserScript==
+// @name         showHoleTraining
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  try to take over the world!
+// @author       You
+// @match        https://www.onlineliga.de/
+// @require      https://greasyfork.org/scripts/5392-waitforkeyelements/code/WaitForKeyElements.js?version=115012
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    function showHoleTraining(){
+        var a = document.getElementsByClassName("column-width-1");
+        var b = document.getElementsByClassName("column-width-2");
+        var c = document.getElementsByClassName("column-width-3");
+        var d = document.getElementsByClassName("column-width-4");
+        var e = document.getElementsByClassName("column-width-5");
+        var f = document.getElementsByClassName("column-width-6");
+        var i;
+        var x;
+        for(i=0; i<c.length; i++){
+            x = c[i].outerHTML.replace("column-width-3","column-width-2");
+            $(c[i]).html(x);
+        }
+        for(i=0; i<d.length; i++){
+            x = d[i].outerHTML.replace("column-width-4","column-width-3");
+            $(d[i]).html(x);
+        }
+        for(i=0; i<f.length; i++){
+            x = f[i].outerHTML.replace("column-width-6","column-width-4");
+            $(f[i]).html(x);
+        }
+    }
+
+    function init(){
+        waitForKeyElements (
+            "div.ol-training-overview-table-container",
+            showHoleTraining
+        );
+    }
+
+    if (!window.OLToolboxActivated) {
+       init();
+    } else {
+        window.OnlineligaFriendlyInfo = {
+            init : init
+        };
+    }
+})();
