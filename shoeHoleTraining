@@ -13,31 +13,25 @@
     'use strict';
 
     function showHoleTraining(){
-        var a = document.getElementsByClassName("column-width-1");
-        var b = document.getElementsByClassName("column-width-2");
-        var c = document.getElementsByClassName("column-width-3");
-        var d = document.getElementsByClassName("column-width-4");
-        var e = document.getElementsByClassName("column-width-5");
-        var f = document.getElementsByClassName("column-width-6");
-        var i;
-        var x;
-        for(i=0; i<c.length; i++){
-            x = c[i].outerHTML.replace("column-width-3","column-width-2");
-            $(c[i]).html(x);
-        }
-        for(i=0; i<d.length; i++){
-            x = d[i].outerHTML.replace("column-width-4","column-width-3");
-            $(d[i]).html(x);
-        }
-        for(i=0; i<f.length; i++){
-            x = f[i].outerHTML.replace("column-width-6","column-width-4");
-            $(f[i]).html(x);
-        }
+        // Entfernt die Overlays (Pfeile zum links und rechts scrollen)
+        $(".ol-scroll-overlay-left").remove();
+        $(".ol-scroll-overlay-right").remove();
+
+        // Zählt die Anzahl der Divs innerhalb vom Div mit der ID "trainingWeektableContainer" und gibt sie in der Konsole aus (evtl. nötig, wenn mit for-Schleife gearbeitet wird)
+        var countDivs = $("#trainingWeektableContainer div").length;
+        console.log(countDivs);
+
+        // Damit sollen eigentlich alle Kinderelement auf 70% ihrer Breite reduziert werden, damit diese näher zusammenrücken, klappt aber nicht!!!
+        $("div#training-timetable-week_plan").children().attr("style","width:70%;");
+
+        // Holt sich die Länge des zusammengebauten Trainings ab und gibt sie an den übergeordneten Div weiter, damit das ganze Training angezeit werden kann. Zusätzlich wird der Scrollbalken ausgeblendet
+        var lengthWeektable = $(".ol-training-weektable-head").width();
+        $("div#trainingWeektableContainer.ol-training-overview-table-container.ol-scroll-overlay-content").attr("style","overflow-x:hidden;width:"+lengthWeektable+"px;");
     }
 
     function init(){
         waitForKeyElements (
-            "div.ol-training-overview-table-container",
+            "div#trainingWeektableContainer",
             showHoleTraining
         );
     }
