@@ -1,0 +1,70 @@
+// ==UserScript==
+// @name         showHoleTraining
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  try to take over the world!
+// @author       You
+// @match        https://www.onlineliga.de/
+// @require      https://greasyfork.org/scripts/5392-waitforkeyelements/code/WaitForKeyElements.js?version=115012
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    function showHoleTraining(){
+        // Entfernen der Overlays (Pfeile zum links und rechts scrollen)
+        $(".ol-scroll-overlay-left").remove();
+        $(".ol-scroll-overlay-right").remove();
+
+        // Verschiebt die Zeitleiste links neben den Trainingsplan (Überlappung wird verhindert)
+        $("div.ol-training-time-labels-left div:first-child").attr("style","position:relative;top:11px;");
+
+        // Anpassung der Spaltenbreiten der Trainingseinheiten bzw. Spaltenüberschriften
+        $("div.ol-training-weektable-matchblock.column-width-3.column-width-match").addClass("column-width-2").removeClass("column-width-3");
+        $("div.ol-training-weektable-matchblock.column-width-3").addClass("column-width-2").removeClass("column-width-3");
+        $("div.ol-training-day-column.column-width-3").addClass("column-width-2").removeClass("column-width-3");
+        $("div.ol-training-day-column-head.column-width-3").addClass("column-width-2").removeClass("column-width-3");
+        $("div.ol-training-weektable-block.column-width-3").addClass("column-width-2").removeClass("column-width-3");
+        $("div.ol-training-day-column.column-width-3").addClass("column-width-2").removeClass("column-width-3");
+        $("div.ol-training-day-column-head.column-width-4").addClass("column-width-3").removeClass("column-width-4");
+        $("div.ol-training-weektable-block.column-width-4").addClass("column-width-3").removeClass("column-width-4");
+        $("div.ol-training-day-column.column-width-4").addClass("column-width-3").removeClass("column-width-4");
+        $("div.ol-training-day-column-head.column-width-6").addClass("column-width-4").removeClass("column-width-6");
+        $("div.ol-training-weektable-head.column-width-43").addClass("column-width-29").removeClass("column-width-43");
+
+        // Holt sich die Länge des zusammengebauten Trainings ab und gibt diese an den übergeordneten Div weiter, damit das ganze Training angezeit werden kann. Zusätzlich wird der Scrollbalken in x-Richtung ausgeblendet
+        var lengthWeektable = $(".ol-training-weektable-head").width()+55;
+        $("div#trainingWeektableContainer.ol-training-overview-table-container.ol-scroll-overlay-content").attr("style","overflow-x:hidden;width:"+lengthWeektable+"px;");
+
+        // Rasteranpassung, sonst sind Striche im Plan
+        $("div.ol-training-day-column-sep.column-left-3").addClass("column-left-2").removeClass("column-left-3");
+        $("div.ol-training-day-column-sep.column-left-6").addClass("column-left-4").removeClass("column-left-6");
+        $("div.ol-training-day-column-sep.column-left-12").addClass("column-left-8").removeClass("column-left-12");
+        $("div.ol-training-day-column-sep.column-left-18").addClass("column-left-12").removeClass("column-left-18");
+        $("div.ol-training-day-column-sep.column-left-24").addClass("column-left-16").removeClass("column-left-24");
+        $("div.ol-training-day-column-sep.column-left-30").addClass("column-left-20").removeClass("column-left-30");
+        $("div.ol-training-day-column-sep.column-left-36").addClass("column-left-24").removeClass("column-left-36");
+        $("div.ol-training-day-column-sep.column-left-40").addClass("column-left-27").removeClass("column-left-40");
+        $("div.ol-training-day-column-sep.column-left-43").addClass("column-left-29").removeClass("column-left-43");
+
+        // Warnungs- und Verletzungsboxen erhalten weniger Abstand zum Rand, damit die Optik verbessert ist
+        $("div.ol-training-timetable-block-injury").attr("style","margin-right:5px;");
+        $("div.ol-training-timetable-block-warning").attr("style","margin-right:5px;");
+    }
+
+    function init(){
+        waitForKeyElements (
+            "div#trainingWeektableContainer",
+            showHoleTraining
+        );
+    }
+
+    if (!window.OLToolboxActivated) {
+       init();
+    } else {
+        window.OnlineligaFriendlyInfo = {
+            init : init
+        };
+    }
+})();
