@@ -2,7 +2,7 @@
 // @name         showWholeTrainingPlan
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  Verbesserung der Trainingsplananzeige in Onlineliga
+// @description  Verbesserung der Wochenplananzeige des Trainings durch eine kompaktere Darstellung
 // @author       König von Weiden
 // @match        https://www.onlineliga.de/
 // @require      https://greasyfork.org/scripts/5392-waitforkeyelements/code/WaitForKeyElements.js?version=115012
@@ -12,6 +12,8 @@
 (function() {
     'use strict';
 
+    // WICHTIG: Funktioniert aktuell nur für Wochenpläne mit einem Trainingsplatz!!!
+
     /* Unser Skript soll nicht auf jeder Seite ausgeführt werden.
     Aus diesem Grund haben wir ein Element <div id="trainingWeektableContainer"> in der Trainingsplanansicht von Onlineliga gewählt, welches nur im Untermenüpunkt Training vorkommt.
     Mit Hilfe der Funktion waitForKeyElements, die mit dem Link unter require im Kopfbereich des Skriptes eingebunden wird, überprüfen wir, ob der entsprechende Div vorhanden ist.
@@ -19,46 +21,73 @@
     waitForKeyElements("div#trainingWeektableContainer",showWholeTrainingPlan);
 
     function showWholeTrainingPlan(){
-        // Zuerst werden die Pfeile zum nach links und nach rechts scrollen entfernt, da wir diese später nicht mehr brauchen.
+
+        // Zuerst werden die Pfeile zum nach links und nach rechts scrollen entfernt, da wir diese später nicht mehr brauchen werden.
         $(".ol-scroll-overlay-left").remove();
         $(".ol-scroll-overlay-right").remove();
 
-        // Im zweiten Schritt fixieren wir die Zeitleiste neben dem Trainingsplan, um eine Layout-Überlappung zu verhinden.
-        $("div.ol-training-time-labels-left div:first-child").attr("style","position:relative;top:11px;");
+        // Im zweiten Schritt fixieren wir die Zeitleiste neben dem Wochenplan, um eine Layout-Überlappung zu verhinden.
+        $(".ol-training-time-labels-left :first-child").attr("style","position:relative;top:11px;");
 
-        /* Beim Trainingsplan sind die Klassen-Namen der Divs für die Breite in der Darstellung des Trainingsplans verantwortlich.
-        Aus diesem Grund löschen wir die alte Klasse und ersetzen sie durch eine niedrigere, was zu einer Verkleinerung der Trainingsblöcke führt.*/
-        $("div.ol-training-weektable-matchblock.column-width-3.column-width-match").addClass("column-width-2").removeClass("column-width-3");
-        $("div.ol-training-weektable-matchblock.column-width-3").addClass("column-width-2").removeClass("column-width-3");
-        $("div.ol-training-day-column.column-width-3").addClass("column-width-2").removeClass("column-width-3");
-        $("div.ol-training-day-column-head.column-width-3").addClass("column-width-2").removeClass("column-width-3");
-        $("div.ol-training-weektable-block.column-width-3").addClass("column-width-2").removeClass("column-width-3");
-        $("div.ol-training-day-column.column-width-3").addClass("column-width-2").removeClass("column-width-3");
-        $("div.ol-training-day-column-head.column-width-4").addClass("column-width-3").removeClass("column-width-4");
-        $("div.ol-training-weektable-block.column-width-4").addClass("column-width-3").removeClass("column-width-4");
-        $("div.ol-training-day-column.column-width-4").addClass("column-width-3").removeClass("column-width-4");
-        $("div.ol-training-day-column-head.column-width-6").addClass("column-width-4").removeClass("column-width-6");
-        $("div.ol-training-weektable-head.column-width-43").addClass("column-width-29").removeClass("column-width-43");
+        /* Beim Wochenplan sind bestimmte Klassen-Namen der Divs für die Breite (1 enstpricht dabei 48px) in der Darstellung des Wochenplans verantwortlich.
+        Aus diesem Grund löschen wir die alte Klasse-Namen und ersetzen diese durch eine niedrigere, damit der Wochenplan kompakter dargestellt wird.
+        Bevor wir die Breiten anpassen, lesen wir noch ein paar Informationen aus, die wir später noch brauchen werden:*/
+
+        // Wir lesen die Div-Spaltenbreite des ursprünglichen Wochenplans aus.
+        let lengthOriginalWeektable = String($(".ol-training-weektable-head").attr("class"));
+        let lengthOriginalWeektableAsInt = parseInt(lengthOriginalWeektable.match(/\d+/gi));
+
+        // Zusätzlich lesen wir noch die Div-Spaltenbreiten für das ursprüngliche Raster des Wochenplans aus, damit wir es später anpassen können.
+        const numberOfDays = $(".ol-training-day-column-head").length;
+        let lengthOriginalRasterAsInt = new Array(numberOfDays+1);
+        let i;
+        for (i=0;i<numberOfDays+1;i++){
+            let lengthOriginalRaster = String($(".ol-training-day-column-sep").eq(i).attr("class"));
+            lengthOriginalRasterAsInt[i] = parseInt(lengthOriginalRaster.match(/\d+/gi));
+            // console.log(lengthOriginalRasterAsInt[i]);
+        }
+
+        // Wir beginnen mit den einzelnen Trainingsblöcken und den dazugehörigen Tagesspalten, in denen sich die Trainingsblöcke befinden.
+        $(".ol-training-weektable-block.column-width-3").addClass("column-width-2").removeClass("column-width-3");
+        $(".ol-training-weektable-block.column-width-4").addClass("column-width-3").removeClass("column-width-4");
+        $(".ol-training-day-column.column-width-3").addClass("column-width-2").removeClass("column-width-3");
+        $(".ol-training-day-column.column-width-4").addClass("column-width-3").removeClass("column-width-4");
+
+        /* Dadurch haben wir leider auch die Spalten für die Ligaspiel- und Friendlyaufstellung überschrieben.
+        Im Gegensatz zu den Trainingstagen, wirkt sich eine kompaktere Darstellung dieser Spalten negativ aus, da nun die Gegner- und Spielernamen nicht mehr richtig gelesen werden können.
+        Aus diesem Grund setzen wir die Klassen-Namen dieser Spalten wieder zurück.*/
+        $(".ol-training-day-column.column-width-2").eq(0).addClass("column-width-3").removeClass("column-width-2");
+        $(".ol-training-day-column.column-width-2").eq(0).addClass("column-width-3").removeClass("column-width-2");
+
+        /* Neben den Trainingsblöcken und Tagesspalten müssen wir noch die Größe der Divs für die Wochentage anpassen.
+        Ausgenommen werden wieder die Spalten für Ligaspiel- und Friendlyaufstellung.*/
+        $(".ol-training-day-column-head.column-width-3").addClass("column-width-2").removeClass("column-width-3");
+        $(".ol-training-day-column-head.column-width-4").addClass("column-width-3").removeClass("column-width-4");
+        $(".ol-training-day-column-head.column-width-6").addClass("column-width-4").removeClass("column-width-6");
+        $(".ol-training-day-column-head").eq(0).addClass("column-width-3").removeClass("column-width-2");
+        $(".ol-training-day-column-head").eq(1).addClass("column-width-3").removeClass("column-width-2");
+        $(".ol-training-day-column-head").eq(8).addClass("column-width-3").removeClass("column-width-2");
+
+        // In diesem Abschnitt erfolgt die Anpassung des Rasters sowie die Größe des Divs für den Wochenplan
+        var lengthNewWeektable = 0;
+        let lengthNewRasterAsInt = new Array(numberOfDays);
+        $(".ol-training-day-column-sep.column-left-"+lengthOriginalRasterAsInt[0]).addClass("column-left-"+lengthNewWeektable).removeClass("column-left-"+lengthOriginalRasterAsInt[0]);
+        for (i=0;i<numberOfDays;i++){
+            let lengthNewRaster = String($(".ol-training-day-column-head").eq(i).attr("class"));
+            lengthNewRasterAsInt[i] = parseInt(lengthNewRaster.match(/\d+/gi));
+            lengthNewWeektable += lengthNewRasterAsInt[i];
+            $(".ol-training-day-column-sep").eq(i+1).removeClass("column-left-"+lengthOriginalRasterAsInt[i+1]);
+            $(".ol-training-day-column-sep").eq(i+1).addClass("column-left-"+lengthNewWeektable);
+        }
+        $(".ol-training-weektable-head").addClass("column-width-"+lengthNewWeektable).removeClass("column-width-"+lengthOriginalWeektableAsInt);
 
         /* Trotz Verkleinerung der Trainingsblöcke kann es vorkommen, dass die von Onlineliga zur Verfügung gestellte Breite für die Trainingsplanansicht nicht ausreicht.
         Deshalb fragen wir hier die notwenige Breite ab und erweitern das verantwortliche Div entsprechend.*/
         var lengthWeektable = $(".ol-training-weektable-head").width()+55;
-        $("div#trainingWeektableContainer.ol-training-overview-table-container.ol-scroll-overlay-content").attr("style","overflow-x:hidden;width:"+lengthWeektable+"px;");
-
-        /* Im Vordergrund existiert noch ein Raster, das die alten Breiten aufweist und minimal störend wirkt.
-        Dieses passen wir für unseren Trainingsplan deshlab noch einmal an.*/
-        $("div.ol-training-day-column-sep.column-left-3").addClass("column-left-2").removeClass("column-left-3");
-        $("div.ol-training-day-column-sep.column-left-6").addClass("column-left-4").removeClass("column-left-6");
-        $("div.ol-training-day-column-sep.column-left-12").addClass("column-left-8").removeClass("column-left-12");
-        $("div.ol-training-day-column-sep.column-left-18").addClass("column-left-12").removeClass("column-left-18");
-        $("div.ol-training-day-column-sep.column-left-24").addClass("column-left-16").removeClass("column-left-24");
-        $("div.ol-training-day-column-sep.column-left-30").addClass("column-left-20").removeClass("column-left-30");
-        $("div.ol-training-day-column-sep.column-left-36").addClass("column-left-24").removeClass("column-left-36");
-        $("div.ol-training-day-column-sep.column-left-40").addClass("column-left-27").removeClass("column-left-40");
-        $("div.ol-training-day-column-sep.column-left-43").addClass("column-left-29").removeClass("column-left-43");
+        $("#trainingWeektableContainer.ol-training-overview-table-container.ol-scroll-overlay-content").attr("style","width:"+lengthWeektable+"px;");
 
         // Da die Warnungs- und Verletzungssymbole nicht mehr ganz zum neuen Layout passen, müssen wir hier noch kurz die Abstände anpassen.
-        $("div.ol-training-timetable-block-injury").attr("style","margin-right:5px;");
-        $("div.ol-training-timetable-block-warning").attr("style","margin-right:5px;");
+        $(".ol-training-timetable-block-injury").attr("style","margin-right:5px;");
+        $(".ol-training-timetable-block-warning").attr("style","margin-right:5px;");
     }
 })();
