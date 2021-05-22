@@ -49,9 +49,12 @@
 
         // Wir beginnen mit den einzelnen Trainingsblöcken und den dazugehörigen Tagesspalten, in denen sich die Trainingsblöcke befinden.
         $(".ol-training-weektable-block.column-width-3").addClass("column-width-2").removeClass("column-width-3");
-        $(".ol-training-weektable-block.column-width-4").addClass("column-width-3").removeClass("column-width-4");
+        $(".ol-training-weektable-block.column-width-4").addClass("column-width-2").removeClass("column-width-4");
         $(".ol-training-day-column.column-width-3").addClass("column-width-2").removeClass("column-width-3");
-        $(".ol-training-day-column.column-width-4").addClass("column-width-3").removeClass("column-width-4");
+        $(".ol-training-day-column.column-width-4").addClass("column-width-2").removeClass("column-width-4");
+        $(".ol-training-day-column-edit.column-width-3").addClass("column-width-2").removeClass("column-width-3");
+        $(".ol-training-day-column-edit.column-width-4").addClass("column-width-2").removeClass("column-width-4");
+        $(".ol-training-day-column-edit.column-width-6").addClass("column-width-2").removeClass("column-width-6");
 
         /* Dadurch haben wir leider auch die Spalten für die Ligaspiel- und Friendlyaufstellung überschrieben.
         Im Gegensatz zu den Trainingstagen, wirkt sich eine kompaktere Darstellung dieser Spalten negativ aus, da nun die Gegner- und Spielernamen nicht mehr richtig gelesen werden können.
@@ -62,13 +65,14 @@
         /* Neben den Trainingsblöcken und Tagesspalten müssen wir noch die Größe der Divs für die Wochentage anpassen.
         Ausgenommen werden wieder die Spalten für Ligaspiel- und Friendlyaufstellung.*/
         $(".ol-training-day-column-head.column-width-3").addClass("column-width-2").removeClass("column-width-3");
-        $(".ol-training-day-column-head.column-width-4").addClass("column-width-3").removeClass("column-width-4");
+        $(".ol-training-day-column-head.column-width-4").addClass("column-width-2").removeClass("column-width-4");
         $(".ol-training-day-column-head.column-width-6").addClass("column-width-4").removeClass("column-width-6");
         $(".ol-training-day-column-head").eq(0).addClass("column-width-3").removeClass("column-width-2");
         $(".ol-training-day-column-head").eq(1).addClass("column-width-3").removeClass("column-width-2");
         $(".ol-training-day-column-head").eq(8).addClass("column-width-3").removeClass("column-width-2");
 
-        // In diesem Abschnitt erfolgt die Anpassung des Rasters sowie die Größe des Divs für den Wochenplan
+        // In diesem Abschnitt erfolgt die Anpassung des Rasters, der Bearbeitungselemente sowie die Gesamtgröße des Divs für den Wochenplan
+        const widthElement = 40;
         var lengthNewWeektable = 0;
         let lengthNewRasterAsInt = new Array(numberOfDays);
         $(".ol-training-day-column-sep.column-left-"+lengthOriginalRasterAsInt[0]).addClass("column-left-"+lengthNewWeektable).removeClass("column-left-"+lengthOriginalRasterAsInt[0]);
@@ -76,18 +80,48 @@
             let lengthNewRaster = String($(".ol-training-day-column-head").eq(i).attr("class"));
             lengthNewRasterAsInt[i] = parseInt(lengthNewRaster.match(/\d+/gi));
             lengthNewWeektable += lengthNewRasterAsInt[i];
+            console.log(lengthNewWeektable);
             $(".ol-training-day-column-sep").eq(i+1).removeClass("column-left-"+lengthOriginalRasterAsInt[i+1]);
             $(".ol-training-day-column-sep").eq(i+1).addClass("column-left-"+lengthNewWeektable);
+            $(".ol-training-day-column-sep").eq(i+1).attr("style","left:"+lengthNewWeektable*widthElement+"px;");
+            if (i>0 && i<8){
+                $(".ol-training-day-column-edit.column-left-"+lengthOriginalRasterAsInt[i+1]).css("left", widthElement*lengthNewWeektable+"px");
+            }
         }
         $(".ol-training-weektable-head").addClass("column-width-"+lengthNewWeektable).removeClass("column-width-"+lengthOriginalWeektableAsInt);
+        console.log(lengthOriginalRasterAsInt);
+        console.log(lengthNewRasterAsInt);
 
         /* Trotz Verkleinerung der Trainingsblöcke kann es vorkommen, dass die von Onlineliga zur Verfügung gestellte Breite für die Trainingsplanansicht nicht ausreicht.
         Deshalb fragen wir hier die notwenige Breite ab und erweitern das verantwortliche Div entsprechend.*/
         var lengthWeektable = $(".ol-training-weektable-head").width()+55;
         $("#trainingWeektableContainer.ol-training-overview-table-container.ol-scroll-overlay-content").attr("style","width:"+lengthWeektable+"px;");
 
-        // Da die Warnungs- und Verletzungssymbole nicht mehr ganz zum neuen Layout passen, müssen wir hier noch kurz die Abstände anpassen.
-        $(".ol-training-timetable-block-injury").attr("style","margin-right:5px;");
-        $(".ol-training-timetable-block-warning").attr("style","margin-right:5px;");
+        // Anpassung der Schriftgrößen
+        $(".ol-training-weektable-block-headline").attr("style","font-size:10pt;");
+        $(".ol-training-weektable-matchblock-date").attr("style","font-size:10pt;");
+        $(".ol-training-weektable-block-text").attr("style","font-size:10pt;");
+        $(".ol-training-weektable-block-time").attr("style","font-size:10pt;");
+        $(".ol-training-day-column-head").attr("style","font-size:11pt;");
+        $(".ol-training-weektable-matchblock-headline").attr("style","font-size:12pt;");
+        $(".ol-training-weektable-matchblock-text").attr("style","font-size:10pt;");
+        $(".ol-training-weektable-matchblock-usages-cell-name-text").attr("style","font-size:10pt;");
+        $(".ol-team-name").attr("style","font-size:10pt;");
+        $(".ol-training-weektable-block-edit-text").attr("style","font-size:10pt;");
+        $(".ol-training-weektable-matchblock-usages-cell.ol-training-weektable-matchblock-usages-cell-minutes.ol-training-weektable-matchblock-usages-cell-minutes1").attr("style","font-size:10pt;");
+
+        // Da die Warnungs- und Verletzungssymbole nicht mehr ganz zum neuen Layout passen, müssen wir hier noch kurz die Abstände und die Größe anpassen.
+        $(".ol-training-timetable-block-injury").attr("style","margin-right:4px;height:12px;width:12px;");
+        $(".ol-training-timetable-block-injury-plus").attr("style","top:-8.5px;left:-8.5px;transform:scale(.4);");
+        $(".ol-training-timetable-block-warning").attr("style","margin-right:4px;height:12px;width:12px;");
+        $(".ol-training-timetable-block-warning-exclam").attr("style","top:-7.5px;transform:scale(.7);");
+
+        // ToDo
+        $(document).ready(function(){
+            $(".column-width-2").css("width", widthElement*2+"px");
+            $(".column-width-3").css("width", widthElement*3+"px");
+            $(".column-width-4").css("width", widthElement*4+"px");
+            $(".column-width-"+lengthNewWeektable).css("width", widthElement*lengthNewWeektable+"px");
+        });
     }
 })();
