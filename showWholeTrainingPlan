@@ -44,7 +44,6 @@
         for (i=0;i<numberOfDays+1;i++){
             let lengthOriginalRaster = String($(".ol-training-day-column-sep").eq(i).attr("class"));
             lengthOriginalRasterAsInt[i] = parseInt(lengthOriginalRaster.match(/\d+/gi));
-            // console.log(lengthOriginalRasterAsInt[i]);
         }
 
         // Wir beginnen mit den einzelnen Trainingsblöcken und den dazugehörigen Tagesspalten, in denen sich die Trainingsblöcke befinden.
@@ -71,6 +70,30 @@
         $(".ol-training-day-column-head").eq(1).addClass("column-width-3").removeClass("column-width-2");
         $(".ol-training-day-column-head").eq(8).addClass("column-width-3").removeClass("column-width-2");
 
+        // Höhen der Trainingsblöcke anpassen
+        const heightElement = 80;
+        const numberTrainingBlocks = $(".ol-training-weektable-block").length;
+        for (i=0;i<numberTrainingBlocks;i++){
+            let colorTrainingBlock = $(".ol-training-weektable-block").eq(i).css("background-color");
+            let heightOldTrainingBlock = $(".ol-training-weektable-block").eq(i).outerHeight();
+            let heightNewTraingBlock = (heightOldTrainingBlock/94)*80;
+            $(".ol-training-weektable-block").eq(i).attr("style","height:"+heightNewTraingBlock+"px;background-color:"+colorTrainingBlock+";");
+        }
+        $(".ol-training-weektable-lockblock").attr("style","height:80px;");
+        // $(".ol-training-weektable-block-text").attr("style","position:static !important;");
+        $(".ol-training-timetable-lockblock-info").attr("style","top:calc(50% - 20.5px);");
+
+        // Höhen der Zeitleiste anpassen, außer der Ersten
+        const numberOfTimeLines = $(".ol-training-weektable-timelabel").length;
+        for (i=1;i<numberOfTimeLines;i++){
+            let heightOldTimeLines = $(".ol-training-weektable-timelabel").eq(i).position();
+            let heightNewTimeLines = (((heightOldTimeLines.top-10)/94)*80)+10;
+            $(".ol-training-weektable-timelabel").eq(i).attr("style","top:"+heightNewTimeLines+"px;");
+        }
+        $(".ol-training-weektable-lockblock").attr("style","height:80px;");
+        // $(".ol-training-weektable-block-text").attr("style","position:static !important;");
+        $(".ol-training-timetable-lockblock-info").attr("style","top:calc(50% - 20.5px);");
+
         // In diesem Abschnitt erfolgt die Anpassung des Rasters, der Bearbeitungselemente sowie die Gesamtgröße des Divs für den Wochenplan
         const widthElement = 40;
         var lengthNewWeektable = 0;
@@ -80,7 +103,6 @@
             let lengthNewRaster = String($(".ol-training-day-column-head").eq(i).attr("class"));
             lengthNewRasterAsInt[i] = parseInt(lengthNewRaster.match(/\d+/gi));
             lengthNewWeektable += lengthNewRasterAsInt[i];
-            console.log(lengthNewWeektable);
             $(".ol-training-day-column-sep").eq(i+1).removeClass("column-left-"+lengthOriginalRasterAsInt[i+1]);
             $(".ol-training-day-column-sep").eq(i+1).addClass("column-left-"+lengthNewWeektable);
             $(".ol-training-day-column-sep").eq(i+1).attr("style","left:"+lengthNewWeektable*widthElement+"px;");
@@ -89,13 +111,6 @@
             }
         }
         $(".ol-training-weektable-head").addClass("column-width-"+lengthNewWeektable).removeClass("column-width-"+lengthOriginalWeektableAsInt);
-        console.log(lengthOriginalRasterAsInt);
-        console.log(lengthNewRasterAsInt);
-
-        /* Trotz Verkleinerung der Trainingsblöcke kann es vorkommen, dass die von Onlineliga zur Verfügung gestellte Breite für die Trainingsplanansicht nicht ausreicht.
-        Deshalb fragen wir hier die notwenige Breite ab und erweitern das verantwortliche Div entsprechend.*/
-        var lengthWeektable = $(".ol-training-weektable-head").width()+55;
-        $("#trainingWeektableContainer.ol-training-overview-table-container.ol-scroll-overlay-content").attr("style","width:"+lengthWeektable+"px;");
 
         // Anpassung der Schriftgrößen
         $(".ol-training-weektable-block-headline").attr("style","font-size:10pt;");
@@ -106,15 +121,19 @@
         $(".ol-training-weektable-matchblock-headline").attr("style","font-size:12pt;");
         $(".ol-training-weektable-matchblock-text").attr("style","font-size:10pt;");
         $(".ol-training-weektable-matchblock-usages-cell-name-text").attr("style","font-size:10pt;");
+        $(".ol-training-weektable-matchblock-friendlies-info").attr("style","font-size:10pt;");
         $(".ol-team-name").attr("style","font-size:10pt;");
         $(".ol-training-weektable-block-edit-text").attr("style","font-size:10pt;");
         $(".ol-training-weektable-matchblock-usages-cell.ol-training-weektable-matchblock-usages-cell-minutes.ol-training-weektable-matchblock-usages-cell-minutes1").attr("style","font-size:10pt;");
 
         // Da die Warnungs- und Verletzungssymbole nicht mehr ganz zum neuen Layout passen, müssen wir hier noch kurz die Abstände und die Größe anpassen.
         $(".ol-training-timetable-block-injury").attr("style","margin-right:4px;height:12px;width:12px;");
-        $(".ol-training-timetable-block-injury-plus").attr("style","top:-8.5px;left:-8.5px;transform:scale(.4);");
+        $(".ol-training-timetable-block-injury-plus").attr("style","top:-8.5px;left:-9.5px;transform:scale(.4);");
         $(".ol-training-timetable-block-warning").attr("style","margin-right:4px;height:12px;width:12px;");
         $(".ol-training-timetable-block-warning-exclam").attr("style","top:-7.5px;transform:scale(.7);");
+
+        $(".ol-training-weektable-days").attr("style","height:987px;");
+        //$("#trainingWeektableContainer").attr("style","border-bottom: 1px solid #b5b5b5;");
 
         // ToDo
         $(document).ready(function(){
@@ -123,5 +142,9 @@
             $(".column-width-4").css("width", widthElement*4+"px");
             $(".column-width-"+lengthNewWeektable).css("width", widthElement*lengthNewWeektable+"px");
         });
+
+        /* Trotz Verkleinerung der Trainingsblöcke kann es vorkommen, dass die von Onlineliga zur Verfügung gestellte Breite für die Trainingsplanansicht nicht ausreicht.
+        Deshalb fragen wir hier die notwenige Breite ab und erweitern das verantwortliche Div entsprechend.*/
+        $("#trainingWeektableContainer.ol-training-overview-table-container.ol-scroll-overlay-content").attr("style","width:"+(widthElement*lengthNewWeektable+55)+"px;border-bottom: 1px solid #b5b5b5;");
     }
 })();
