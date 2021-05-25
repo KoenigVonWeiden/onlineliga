@@ -76,23 +76,32 @@
         for (i=0;i<numberTrainingBlocks;i++){
             let colorTrainingBlock = $(".ol-training-weektable-block").eq(i).css("background-color");
             let heightOldTrainingBlock = $(".ol-training-weektable-block").eq(i).outerHeight();
-            let heightNewTraingBlock = (heightOldTrainingBlock/94)*80;
+            let heightNewTraingBlock = (heightOldTrainingBlock/94)*heightElement;
             $(".ol-training-weektable-block").eq(i).attr("style","height:"+heightNewTraingBlock+"px;background-color:"+colorTrainingBlock+";");
         }
-        $(".ol-training-weektable-lockblock").attr("style","height:80px;");
-        // $(".ol-training-weektable-block-text").attr("style","position:static !important;");
+
+        // Höhe geblockten Trainingsblöcke
+        const numberBlockedTrainingBlocks = $(".ol-training-weektable-lockblock").length;
+        for (i=0;i<numberBlockedTrainingBlocks;i++){
+            let heightOldBlockedTrainingBlock = $(".ol-training-weektable-lockblock").eq(i).height();
+            let heightNewBlockedTraingBlock;
+            if (heightOldBlockedTrainingBlock==90){
+                heightNewBlockedTraingBlock = heightElement;
+            }
+            else {
+                heightNewBlockedTraingBlock = ((heightOldBlockedTrainingBlock+4)/94)*heightElement;
+            }
+            $(".ol-training-weektable-lockblock").eq(i).attr("style","height:"+heightNewBlockedTraingBlock+"px;");
+        }
         $(".ol-training-timetable-lockblock-info").attr("style","top:calc(50% - 20.5px);");
 
         // Höhen der Zeitleiste anpassen, außer der Ersten
         const numberOfTimeLines = $(".ol-training-weektable-timelabel").length;
         for (i=1;i<numberOfTimeLines;i++){
             let heightOldTimeLines = $(".ol-training-weektable-timelabel").eq(i).position();
-            let heightNewTimeLines = (((heightOldTimeLines.top-10)/94)*80)+10;
+            let heightNewTimeLines = (((heightOldTimeLines.top-10)/94)*heightElement)+10;
             $(".ol-training-weektable-timelabel").eq(i).attr("style","top:"+heightNewTimeLines+"px;");
         }
-        $(".ol-training-weektable-lockblock").attr("style","height:80px;");
-        // $(".ol-training-weektable-block-text").attr("style","position:static !important;");
-        $(".ol-training-timetable-lockblock-info").attr("style","top:calc(50% - 20.5px);");
 
         // In diesem Abschnitt erfolgt die Anpassung des Rasters, der Bearbeitungselemente sowie die Gesamtgröße des Divs für den Wochenplan
         const widthElement = 40;
@@ -115,8 +124,8 @@
         // Anpassung der Schriftgrößen
         $(".ol-training-weektable-block-headline").attr("style","font-size:10pt;");
         $(".ol-training-weektable-matchblock-date").attr("style","font-size:10pt;");
-        $(".ol-training-weektable-block-text").attr("style","font-size:10pt;");
-        $(".ol-training-weektable-block-time").attr("style","font-size:10pt;");
+        $(".ol-training-weektable-block-text").attr("style","font-size:10pt;position:static;");
+        $(".ol-training-weektable-block-time").attr("style","font-size:10pt;position:static;");
         $(".ol-training-day-column-head").attr("style","font-size:11pt;");
         $(".ol-training-weektable-matchblock-headline").attr("style","font-size:12pt;");
         $(".ol-training-weektable-matchblock-text").attr("style","font-size:10pt;");
@@ -128,12 +137,11 @@
 
         // Da die Warnungs- und Verletzungssymbole nicht mehr ganz zum neuen Layout passen, müssen wir hier noch kurz die Abstände und die Größe anpassen.
         $(".ol-training-timetable-block-injury").attr("style","margin-right:4px;height:12px;width:12px;");
-        $(".ol-training-timetable-block-injury-plus").attr("style","top:-8.5px;left:-9.5px;transform:scale(.4);");
+        $(".ol-training-timetable-block-injury-plus").attr("style","top:-8.5px;left:-8.5px;transform:scale(.4);");
         $(".ol-training-timetable-block-warning").attr("style","margin-right:4px;height:12px;width:12px;");
         $(".ol-training-timetable-block-warning-exclam").attr("style","top:-7.5px;transform:scale(.7);");
 
         $(".ol-training-weektable-days").attr("style","height:987px;");
-        //$("#trainingWeektableContainer").attr("style","border-bottom: 1px solid #b5b5b5;");
 
         // ToDo
         $(document).ready(function(){
